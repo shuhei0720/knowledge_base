@@ -5,6 +5,7 @@
 例えるのであれば、全てを纏めて入れる箱のようなものです。
 
 ![image.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3585159/b766f7dd-c3af-47bc-a23b-8bf0ff2dd0ff.png)
+
 テナントと組織は、常に1対1で紐づきます。
 テナントの概念はMicrosoft製品全体に影響します。
 Azureだけではなく、Microsoft365なども一緒に管理します。
