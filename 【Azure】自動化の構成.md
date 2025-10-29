@@ -39,8 +39,8 @@ Protectという名前のサブネットを走査して、IP範囲を収集し�
 |IpGroupRg|文字列|IPグループのリソースグループ名|test-auto|事前にRGが存在していること。|
 |IpGroupName|文字列|IPグループのリソース名|ipg-protected|既存があれば更新、なければ新規作成。|
 |Location|文字列|IPグループのリージョン|japaneast|既存があれば既存locationを使用。新規時のみ必須。|
-|ProtectPattern|文字列|保護サブネット判定の正規表現|protect|任意で厳密化（例: ^(?i)snet-protect-）。|
-|IncludeIPv6|文字列|IPv6 CIDRも同期対象に含めるか|falseでIPv6除外。|
+|ProtectPattern|文字列|保護サブネット判定の正規表現|protect|大文字小文字は区別しない。|
+|IncludeIPv6|文字列|IPv6 CIDRも同期対象に含めるか|false|falseでIPv6除外。|
 
 ![image.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3585159/9692f045-5859-4496-9328-be54bf147175.png)
 
