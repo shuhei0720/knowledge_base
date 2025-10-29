@@ -285,7 +285,7 @@ $client.Dispose()
 ```
 ![image.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3585159/80aafd92-8d9c-4f54-baa8-fe83bcc81f3a.png)
 
-# アラートルールの作成
+## 3.アラートルールの作成
 ログからVNetの作成を検知して、Automationを起動するアラートルールを作成します。
 - アラートルールの作成→リソースの選択からログを送信しているLog Analyticsワークスペースを選択
 ![image.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3585159/890eaf30-e278-4c12-b0db-a682aab1095c.png)
