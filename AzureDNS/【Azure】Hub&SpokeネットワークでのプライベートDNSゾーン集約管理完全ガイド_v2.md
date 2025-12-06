@@ -1,17 +1,3 @@
-## 目次
-- 概要
-- 前提・用語
-- 前提: Azure プライベートDNS の仕組み
-- 実装方針
-- Azure Policy を使った自動化
-- 実装手順（共通）
-- サービス別実装ガイド（代表例）
-- テンプレート：Azure CLI / Bicep サンプル
-- トラブルシュートと検証方法
-- 付録: 参考資料
-
----
-
 ## 概要
 Hub（集約DNS基盤）にプライベートDNSゾーンを配置し、Spoke の仮想ネットワークからそのゾーンを参照して名前解決を行うアーキテクチャを対象とします。本記事では具体的な実装手順を示し、PaaS リソースの Private Endpoint 利用時に必要な DNS の扱い（自動登録）までカバーします。
 
@@ -19,7 +5,6 @@ Hub（集約DNS基盤）にプライベートDNSゾーンを配置し、Spoke �
 - Hub にゾーンを集約し、VNet リンク／Private DNS Resolverで Spoke から参照するパターンを解説
 - Azure Policy による自動レコード登録を前提とした実装
 
----
 
 ## 前提・用語
 - Hub: 集約 DNS ゾーンをホストする管理ネットワーク。
@@ -32,7 +17,6 @@ Hub（集約DNS基盤）にプライベートDNSゾーンを配置し、Spoke �
 - Hub と Spoke の接続が完了しており、DNS の到達経路（VNet リンク、Private DNS Resolver）が確立されていること。
 - すべてのコマンド例では `RESOURCE_GROUP` / `VNET_NAME` / `PE_NAME` / `ZONE_NAME` 等を実環境の値に置換してください。
 
----
 
 ## 前提: Azure プライベートDNSの仕組み（技術解説）
 
@@ -97,7 +81,6 @@ Hub（集約DNS基盤）にプライベートDNSゾーンを配置し、Spoke �
   - 必要に応じて Resolver でオンプレへ転送（Outbound）やオンプレからの参照（Inbound）を行います。
 ```
 
----
 
 ## 実装方針（設計上の決めごと）
 1. ゾーン配置戦略
@@ -110,7 +93,6 @@ Hub（集約DNS基盤）にプライベートDNSゾーンを配置し、Spoke �
 4. 権限設計
    - DNS ゾーン作成・変更は Hub 運用チームが管理。Spoke 側には最小権限を付与し、必要な操作は RBAC で制御する。
 
----
 
 ## Azure Policy を使った自動化（ポリシー定義とパラメーター）
 
@@ -141,7 +123,6 @@ Policy 自動化の流れ (簡易)
          Hub の Private DNS Zone へレコード追加
 ```
 
----
 
 ## 実装手順（共通）
 
@@ -178,7 +159,6 @@ az network private-endpoint create -g <SPOKE_RG> -n <pe-name> --vnet-name <spoke
  (1) ---> (2) ---> (3) ---> (4) ---> (5)
 ```
 
----
 
 ## サービス別実装ガイド（代表例）
 
@@ -210,7 +190,6 @@ PE により Hub 側ゾーンの A/CNAME が参照され、Spoke から名前解
 
 （詳細は実際にデプロイするサービス毎のドキュメントを参照し、必要に応じてこの節を展開してください。）
 
----
 
 ## サービス一覧: プライベートDNSゾーン参照表
 
@@ -356,7 +335,6 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
 
 - privateDnsZoneGroups をデプロイする ARM/Bicep を用いたサンプルは、ポリシーの `deployment` 部分で使います。
 
----
 
 ## トラブルシュートと検証方法
 
@@ -369,7 +347,6 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
   - デプロイ用の Managed Identity に対する RBAC を確認（DNS Contributor 等）。
   - ポリシーの条件式が対象リソースにマッチしているかログで確認。
 
----
 
 ## 付録: 参考資料
 - Azure Private Endpoint と Private DNS の公式ドキュメント
@@ -658,11 +635,9 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
   - CoreDNS のフォワード設定や `stubDomains` を確認・必要なら調整する
   - 必要に応じて、ポリシーで `Microsoft.Network/privateDnsZones/A` のレコードを作るテンプレートを用意する
 
----
 
 各テンプレートは「対象リソースの特定」「デプロイ用 Managed Identity の権限」「パラメーターの正確な紐付け」の3点が揃って初めて安全に運用できます。必要であれば、実際の運用環境に合わせたフルポリシー（パラメーター定義・ロール定義・サンプルパラメーター値）を作成して、このファイルへ挿入します。
 
----
 
 <!-- 付録B: 全サービス向けポリシー定義のインライン挿入 -->
 
@@ -684,7 +659,6 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
 
 > 注: 実運用ではデプロイ用 Managed Identity に `DNS Contributor` 権限を付与してください。`deployment.properties.template` 部分には Hub の `privateDnsZoneGroups` を作成する ARM/Bicep を入れてください。
 
----
 
 以下はサービス別テンプレート（代表例）。必要に応じて `if` 条件や `existenceCondition` を調整してください。
 
@@ -760,9 +734,5 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2018-09-01' = {
 { "properties": { "displayName": "Deploy Private DNS (Generic) - replace resource type", "policyType": "Custom", "mode": "Indexed", "parameters": {"privateDnsZoneId": {"type": "String"}, "targetResourceType": {"type":"String"}}, "policyRule": { "if": {"field":"type","equals":"[parameters('targetResourceType')]"}, "then": {"effect":"deployIfNotExists","details": {"type":"Microsoft.Network/privateEndpoints/privateDnsZoneGroups","existenceCondition":{"field":"Microsoft.Network/privateEndpoints/privateDnsZoneGroups[*].privateDnsZoneConfigs[*].properties.privateDnsZoneId","equals":"[parameters('privateDnsZoneId')]"},"deployment":{"properties":{"mode":"incremental","template":{}}}} } } } }
 ```
 
----
 
-上記テンプレート群は本文の完全表に登場するほとんどのリソースタイプをカバーする汎用/代表パターンです。必要なら優先サービス（例: `Storage`, `SQL`, `KeyVault`, `AppService`, `AKS`）ごとに `deployment.properties.template` をフルに埋めた "そのまま割当可能" な JSON を作成してこの付録に追記します。
-
-どのサービスを最優先で展開しますか？
-
+上記テンプレート群は本文の完全表に登場するほとんどのリソースタイプをカバーする汎用/代表パターンです。必要なら優先サービス（例: `Storage`, `SQL`, `KeyVault`, `AppService`, `AKS`）ごとに `deployment.properties.template` をフルに埋めた "そのまま割当可能" な JSON です。
